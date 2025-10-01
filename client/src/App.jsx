@@ -10,31 +10,53 @@ function App() {
   });
   const [submitStatus, setSubmitStatus] = useState("");
   const [editingForm, setEditingForm] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const API_BASE = "https://monjur.up.railway.app";
 
   useEffect(() => {
-    fetchUsers();
-    fetchForms();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await Promise.all([fetchUsers(), fetchForms()]);
+    } catch (error) {
+      setError("Failed to load data from server");
+      console.error("Data loading error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${API_BASE}/users`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
+      setError("Failed to load users");
     }
   };
 
   const fetchForms = async () => {
     try {
       const response = await fetch(`${API_BASE}/forms`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setForms(data);
     } catch (error) {
       console.error("Error fetching forms:", error);
+      setError("Failed to load forms");
     }
   };
 
@@ -49,6 +71,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitStatus("Submitting...");
+    setError("");
 
     try {
       const url = editingForm ? `${API_BASE}/forms/${editingForm.id}` : `${API_BASE}/submit-form`;
@@ -62,6 +85,10 @@ function App() {
         body: JSON.stringify(formData),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {
@@ -74,6 +101,7 @@ function App() {
       }
     } catch (error) {
       setSubmitStatus("Error submitting form");
+      setError("Network error - cannot connect to server");
       console.error("Submission error:", error);
     }
   };
@@ -86,6 +114,7 @@ function App() {
     });
     setEditingForm(form);
     setSubmitStatus("");
+    setError("");
   };
 
   const handleDelete = async (id) => {
@@ -94,6 +123,10 @@ function App() {
         const response = await fetch(`${API_BASE}/forms/${id}`, {
           method: "DELETE",
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const result = await response.json();
 
@@ -105,6 +138,7 @@ function App() {
         }
       } catch (error) {
         setSubmitStatus("Error deleting form");
+        setError("Network error - cannot connect to server");
         console.error("Delete error:", error);
       }
     }
@@ -114,11 +148,35 @@ function App() {
     setFormData({ name: "", email: "", message: "" });
     setEditingForm(null);
     setSubmitStatus("");
+    setError("");
   };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
       <h1>Contact Form with Sequelize ORM</h1>
+      
+      {error && (
+        <div style={{ 
+          padding: "10px", 
+          backgroundColor: "#f8d7da", 
+          color: "#721c24", 
+          border: "1px solid #f5c6cb",
+          borderRadius: "4px",
+          marginBottom: "20px"
+        }}>
+          <strong>Error:</strong> {error}
+          <br />
+          <small>Check if your backend is running and CORS is configured properly.</small>
+        </div>
+      )}
       
       {/* Contact Form */}
       <form onSubmit={handleSubmit} style={{ marginBottom: "40px", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -262,12 +320,16 @@ function App() {
 
       {/* Existing Users Display */}
       <div>
-        <h2>Users from MySQL</h2>
-        <ul>
-          {users.map((u) => (
-            <li key={u.id}>{u.name}</li>
-          ))}
-        </ul>
+        <h2>Users from MySQL ({users.length})</h2>
+        {users.length === 0 ? (
+          <p>No users found.</p>
+        ) : (
+          <ul>
+            {users.map((u) => (
+              <li key={u.id}>{u.name}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

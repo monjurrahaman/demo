@@ -8,7 +8,11 @@ const path = require("path");
 const app = express();
 
 // Middleware
-app.use(cors());
+// Update CORS to be more permissive
+app.use(cors({
+  origin: ["https://monjur.up.railway.app"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../client/build")));
 
