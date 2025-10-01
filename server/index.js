@@ -100,16 +100,16 @@ app.get("/", (req, res) => {
   res.send("Server is running with Sequelize ORM!");
 });
 
-// Get all users
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-});
+// // Get all users
+// app.get("/users", async (req, res) => {
+//   try {
+//     const users = await User.findAll();
+//     res.json(users);
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     res.status(500).json({ error: "Failed to fetch users" });
+//   }
+// });
 
 // Submit form data
 app.post("/submit-form", async (req, res) => {
@@ -129,7 +129,7 @@ app.post("/submit-form", async (req, res) => {
     res.json({
       success: true,
       message: "Form submitted successfully!",
-      data: form
+    //   data: form
     });
   } catch (error) {
     console.error("Error submitting form:", error);
@@ -146,66 +146,66 @@ app.post("/submit-form", async (req, res) => {
 });
 
 // Get all submitted forms
-app.get("/forms", async (req, res) => {
-  try {
-    const forms = await Form.findAll({
-      order: [['created_at', 'DESC']]
-    });
-    res.json(forms);
-  } catch (error) {
-    console.error("Error fetching forms:", error);
-    res.status(500).json({ error: "Failed to fetch forms" });
-  }
-});
+// app.get("/forms", async (req, res) => {
+//   try {
+//     const forms = await Form.findAll({
+//       order: [['created_at', 'DESC']]
+//     });
+//     res.json(forms);
+//   } catch (error) {
+//     console.error("Error fetching forms:", error);
+//     res.status(500).json({ error: "Failed to fetch forms" });
+//   }
+// });
 
 // Get single form by ID
-app.get("/forms/:id", async (req, res) => {
-  try {
-    const form = await Form.findByPk(req.params.id);
-    if (!form) {
-      return res.status(404).json({ error: "Form not found" });
-    }
-    res.json(form);
-  } catch (error) {
-    console.error("Error fetching form:", error);
-    res.status(500).json({ error: "Failed to fetch form" });
-  }
-});
+// app.get("/forms/:id", async (req, res) => {
+//   try {
+//     const form = await Form.findByPk(req.params.id);
+//     if (!form) {
+//       return res.status(404).json({ error: "Form not found" });
+//     }
+//     res.json(form);
+//   } catch (error) {
+//     console.error("Error fetching form:", error);
+//     res.status(500).json({ error: "Failed to fetch form" });
+//   }
+// });
 
 // Update form
-app.put("/forms/:id", async (req, res) => {
-  try {
-    const { name, email, message } = req.body;
-    const form = await Form.findByPk(req.params.id);
+// app.put("/forms/:id", async (req, res) => {
+//   try {
+//     const { name, email, message } = req.body;
+//     const form = await Form.findByPk(req.params.id);
     
-    if (!form) {
-      return res.status(404).json({ error: "Form not found" });
-    }
+//     if (!form) {
+//       return res.status(404).json({ error: "Form not found" });
+//     }
 
-    await form.update({ name, email, message });
-    res.json({ success: true, message: "Form updated successfully", data: form });
-  } catch (error) {
-    console.error("Error updating form:", error);
-    res.status(500).json({ error: "Failed to update form" });
-  }
-});
+//     await form.update({ name, email, message });
+//     res.json({ success: true, message: "Form updated successfully", data: form });
+//   } catch (error) {
+//     console.error("Error updating form:", error);
+//     res.status(500).json({ error: "Failed to update form" });
+//   }
+// });
 
 // Delete form
-app.delete("/forms/:id", async (req, res) => {
-  try {
-    const form = await Form.findByPk(req.params.id);
+// app.delete("/forms/:id", async (req, res) => {
+//   try {
+//     const form = await Form.findByPk(req.params.id);
     
-    if (!form) {
-      return res.status(404).json({ error: "Form not found" });
-    }
+//     if (!form) {
+//       return res.status(404).json({ error: "Form not found" });
+//     }
 
-    await form.destroy();
-    res.json({ success: true, message: "Form deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting form:", error);
-    res.status(500).json({ error: "Failed to delete form" });
-  }
-});
+//     await form.destroy();
+//     res.json({ success: true, message: "Form deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting form:", error);
+//     res.status(500).json({ error: "Failed to delete form" });
+//   }
+// });
 
 // Catch-all handler for React app
 app.get("*", (req, res) => {
