@@ -4,7 +4,7 @@ function App() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/users`)
+    fetch(`https://demo-production-557f.up.railway.app/users`)
       .then((res) => res.json())
       .then((data) => setUsers(data));
   }, []);
