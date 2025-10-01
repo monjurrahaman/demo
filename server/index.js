@@ -4,13 +4,15 @@ const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
 
-// Serve frontend build
-app.use(express.static(path.join(__dirname, "../client/build")));
-
-
+// Initialize Express app FIRST
 const app = express();
+
+// Now you can use app
 app.use(cors());
 app.use(express.json());
+
+// Serve frontend build - MOVED AFTER app initialization
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 // Create MySQL connection
 const db = mysql.createConnection({
@@ -33,6 +35,8 @@ app.get("/users", (req, res) => {
     res.json(results);
   });
 });
+
+// Catch-all handler - must be last
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
